@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>AI Caller App</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f8;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            max-width: 400px;
+            width: 100%;
+            text-align: center;
+        }
+        input[type="text"] {
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+        button {
+            padding: 12px 24px;
+            font-size: 16px;
+            border: none;
+            border-radius: 8px;
+            background-color: #4CAF50;
+            color: white;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        h2 {
+            margin-bottom: 20px;
+            color: #333;
+        }
+        #status {
+            margin-top: 20px;
+            color: #4CAF50;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h2>AI Caller App</h2>
+        <p>Enter phone number to call (with country code):</p>
+
+        <input type="text" id="to_number" placeholder="+1XXXXXXXXXX" />
+        <button onclick="makeCall()">📞 Call Now</button>
+
+        <p id="status"></p>
+    </div>
+
+    <script>
+        function makeCall() {
+            const to_number = document.getElementById("to_number").value;
+            if (!to_number) {
+                alert("Please enter a phone number.");
+                return;
+            }
+
+            document.getElementById("status").innerText = "Calling...";
+
+            fetch("https://ai-caller-qej2.onrender.com/make_call", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ to_number: to_number })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data);
+                if (data.status === "success") {
+                    document.getElementById("status").innerText = "✅ Call placed! SID: " + data.call_sid;
+                } else {
+                    document.getElementById("status").innerText = "❌ Error: " + data.message;
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                document.getElementById("status").innerText = "❌ Error placing call.";
+            });
+        }
+    </script>
+
+</body>
+</html>
