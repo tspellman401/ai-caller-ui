@@ -11,10 +11,9 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            justify-content: flex-start;
             padding: 20px;
+            margin: 0;
         }
         .container {
             background-color: white;
@@ -23,7 +22,7 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
             max-width: 400px;
             width: 100%;
-            text-align: center;
+            margin-top: 20px;
         }
         input[type="text"] {
             padding: 12px;
@@ -42,6 +41,7 @@
             color: white;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            width: 100%;
         }
         button:hover {
             background-color: #45a049;
@@ -55,23 +55,50 @@
             color: #4CAF50;
             font-weight: bold;
         }
+        .history {
+            margin-top: 30px;
+            text-align: left;
+        }
+        .history h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        .history ul {
+            list-style: none;
+            padding: 0;
+        }
+        .history li {
+            background: #eef2f3;
+            margin-bottom: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            font-size: 14px;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
         <h2>AI Caller App</h2>
-        <p>Enter phone number to call (with country code):</p>
+        <p>Enter details to call seller:</p>
 
+        <input type="text" id="seller_name" placeholder="Seller Name (optional)" />
         <input type="text" id="to_number" placeholder="+1XXXXXXXXXX" />
         <button onclick="makeCall()">📞 Call Now</button>
 
         <p id="status"></p>
+
+        <div class="history" id="call_history">
+            <h3>Call History:</h3>
+            <ul id="history_list"></ul>
+        </div>
     </div>
 
     <script>
         function makeCall() {
             const to_number = document.getElementById("to_number").value;
+            const seller_name = document.getElementById("seller_name").value || "Unknown";
+
             if (!to_number) {
                 alert("Please enter a phone number.");
                 return;
@@ -91,6 +118,7 @@
                 console.log(data);
                 if (data.status === "success") {
                     document.getElementById("status").innerText = "✅ Call placed! SID: " + data.call_sid;
+                    addToHistory(seller_name, to_number, data.call_sid);
                 } else {
                     document.getElementById("status").innerText = "❌ Error: " + data.message;
                 }
@@ -99,6 +127,17 @@
                 console.error(error);
                 document.getElementById("status").innerText = "❌ Error placing call.";
             });
+        }
+
+        function addToHistory(name, number, sid) {
+            const historyList = document.getElementById("history_list");
+            const timestamp = new Date().toLocaleString();
+
+            const entry = document.createElement("li");
+            entry.textContent = `${timestamp} - ${name} (${number}) → SID: ${sid}`;
+
+            // Add entry at top of list
+            historyList.insertBefore(entry, historyList.firstChild);
         }
     </script>
 
